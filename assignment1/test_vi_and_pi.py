@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from vi_and_pi import (policy_evaluation, policy_rewards, policy_probs, state_action_probs,
-      state_action_reward)
+      state_action_reward, state_rewards)
 
 class PolicyEvaluation(unittest.TestCase):
 
@@ -28,7 +28,6 @@ class PolicyEvaluation(unittest.TestCase):
     arr2 = np.zeros((1, 3))
     self.assertEqual(np.matmul(arr1, arr2).shape, (3,))
     self.assertEqual(arr2[0][2], 0)
-
   def test_policy_reward(self):
     policy1 = np.array([0])
     policy2 = np.array([1])
@@ -61,7 +60,6 @@ class PolicyEvaluation(unittest.TestCase):
       [.5, .5],
       [.2, .8]
     ])).all())
-
   def test_one_state_two_actions(self):
     policy1 = np.array([0])
     policy2 = np.array([1])
@@ -85,7 +83,6 @@ class PolicyEvaluation(unittest.TestCase):
     
     value = policy_evaluation(P, nS, nA, policy, gamma)
     self.assertTrue((np.abs(value - np.array([1/(1 - gamma), gamma/(1 - gamma)])) < 1e-2).all())
-
 class PolicyImprovment(unittest.TestCase):
   def test_multiple_test_case(self):
     self.assertTrue(True) 
@@ -106,6 +103,7 @@ class PolicyImprovment(unittest.TestCase):
       }
     }
     probs0 = state_action_probs(P, 2, 0, 0)
+    print probs0
     self.assertTrue((probs0 == np.array([.5, .5])).all())
     probs1 = state_action_probs(P, 2, 1, 0)
     self.assertTrue((probs1 == np.array([.2, .8])).all())
@@ -147,6 +145,21 @@ class PolicyImprovment(unittest.TestCase):
 
     reward1 = state_action_reward(P, 1, 0)
     self.assertEqual(reward1, 6)
-
+  def test_state_rewards(self):
+	P = {
+          0: {
+            0: [
+              (.5, 0, 2, False),
+              (.5, 1, 0, False)
+            ],
+	   1: [
+              (.5, 0, 1, False),
+              (.5, 1, 0, False)
+            ]
+          }
+	    }
+	rewards = state_rewards(P, 2, 0)
+	self.assertTrue( (rewards == np.array([ 1., .5 ]) ).all() ) 
 if __name__ == '__main__':
   unittest.main()
+ 
